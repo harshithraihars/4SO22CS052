@@ -8,7 +8,7 @@ const ApiHandler = async (response, numberType) => {
   const Data = [];
   const windowSize = 10;
 
-  let previousData = Data;
+  let previousData = [...Data]
   try {
     const res = await axios.post(
       "http://20.244.56.144/evaluation-service/auth",
