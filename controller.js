@@ -1,6 +1,10 @@
 const { default: axios } = require("axios");
 
 const ApiHandler = async (numberType) => {
+    const primeApi="http://20.244.56.144/evaluation-service/primes"
+    const evenApi="http://20.244.56.144/evaluation-service/even"
+    const randApi="http://20.244.56.144/evaluation-service/rand"
+    const fiboApi="http://20.244.56.144/evaluation-service/fibo"
   const Data = [];
   const windowSize = 10;
 
@@ -22,9 +26,22 @@ const ApiHandler = async (numberType) => {
     if (!accesstoken) {
       return;
     }
-    if (numberType == "p") {
+
+    let currentapi
+    if(numberType=="p"){
+        currentapi=primeApi
+    }
+    else if(numberType=="r"){
+        currentapi=randApi
+    }
+    else if(numberType=="f"){
+        currentapi=fiboApi
+    }
+    else{
+        currentapi=evenApi
+    }
       const {data} = await axios.get(
-        "http://20.244.56.144/evaluation-service/primes",
+        currentapi,
         {
           headers: {
             Authorization: `Bearer ${accesstoken}`,
@@ -32,7 +49,6 @@ const ApiHandler = async (numberType) => {
         }
       );
       apiData=data
-    }
 
     console.log(apiData?.numbers);
     
