@@ -1,3 +1,4 @@
+require("dotenv").config()
 const {router}=require("./route")
 const express=require("express")
 
