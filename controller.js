@@ -1,6 +1,6 @@
 const { default: axios } = require("axios");
 
-const ApiHandler = async (numberType) => {
+const ApiHandler = async (response, numberType) => {
   const primeApi = "http://20.244.56.144/evaluation-service/primes";
   const evenApi = "http://20.244.56.144/evaluation-service/even";
   const randApi = "http://20.244.56.144/evaluation-service/rand";
@@ -8,6 +8,7 @@ const ApiHandler = async (numberType) => {
   const Data = [];
   const windowSize = 10;
 
+  let previousData = Data;
   try {
     const res = await axios.post(
       "http://20.244.56.144/evaluation-service/auth",
@@ -37,35 +38,42 @@ const ApiHandler = async (numberType) => {
     } else {
       currentapi = evenApi;
     }
-    const { data } = await axios.get(currentapi, {
-      headers: {
-        Authorization: `Bearer ${accesstoken}`,
+    const { data } = await axios.get(
+      currentapi,
+      {
+        headers: {
+          Authorization: `Bearer ${accesstoken}`,
+        },
       },
-    },{timeout:500});
-    apiData = data.numbers; 
+      { timeout: 500 }
+    );
+    apiData = data.numbers;
     console.log(apiData);
-    
-    for(let i=0;i<apiData.length;i++){
-        
-        if(!Data.includes(apiData[i])){
-            
-            if(Data.length==windowSize){
-                Data.shift()
-            }
-            
-            Data.push(apiData[i])
+
+    for (let i = 0; i < apiData.length; i++) {
+      if (!Data.includes(apiData[i])) {
+        if (Data.length == windowSize) {
+          Data.shift();
         }
-    }
-    
-    let sum=0;
-    for(let i=0;i<apiData.length;i++){
-        sum+=apiData[i]
+
+        Data.push(apiData[i]);
+      }
     }
 
-    let avg=sum/windowSize
-    
+    let sum = 0;
+    for (let i = 0; i < apiData.length; i++) {
+      sum += apiData[i];
+    }
+
+    let avg = sum / windowSize;
+    return response.json({
+      windowPrevState: previousData,
+      windowCurrState: Data,
+      numbers: apiData,
+      avg: avg,
+    });
   } catch (error) {
-    console.log(error.message);
+    return response.json({"error":error.message})
   }
 };
 module.exports = { ApiHandler };
